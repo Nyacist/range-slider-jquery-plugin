@@ -14,6 +14,32 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./controller.ts":
+/*!***********************!*\
+  !*** ./controller.ts ***!
+  \***********************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RangeSliderController = void 0;
+const model_1 = __webpack_require__(/*! ./model */ "./model.ts");
+class RangeSliderController {
+    constructor() {
+        this.model = new model_1.RangeSliderModel();
+    }
+    handleGetOptions() {
+        return this.model.getOptions();
+    }
+    handleSetOptions(props) {
+        this.model.setOptions(props);
+    }
+}
+exports.RangeSliderController = RangeSliderController;
+
+
+/***/ }),
+
 /***/ "./index.ts":
 /*!******************!*\
   !*** ./index.ts ***!
@@ -26,31 +52,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const jquery_1 = __importDefault(__webpack_require__(/*! jquery */ "../node_modules/jquery/dist/jquery.js"));
+const jquery_2 = __importDefault(__webpack_require__(/*! jquery */ "../node_modules/jquery/dist/jquery.js"));
 __webpack_require__(/*! ./style.scss */ "./style.scss");
+const view_1 = __webpack_require__(/*! ./view */ "./view.ts");
 (0, jquery_1.default)(function () {
     let rangeInputs = (0, jquery_1.default)('.range-input input');
-    let priceInputs = (0, jquery_1.default)('.price-input input');
+    //let priceInputs = $('.price-input input')
     const progress = (0, jquery_1.default)('.slider .progress');
     const gap = 1000;
-    priceInputs.each(function () {
-        this.addEventListener("input", (e) => {
-            var _a, _b, _c, _d;
-            let leftInputValue = +((_a = (0, jquery_1.default)(priceInputs[0]).val()) !== null && _a !== void 0 ? _a : 0);
-            let rightInputValue = +((_b = (0, jquery_1.default)(priceInputs[1]).val()) !== null && _b !== void 0 ? _b : 0);
-            let leftMaxValue = +((_c = (0, jquery_1.default)(rangeInputs[0]).attr('max')) !== null && _c !== void 0 ? _c : 1);
-            let rightMaxValue = +((_d = (0, jquery_1.default)(rangeInputs[1]).attr('max')) !== null && _d !== void 0 ? _d : 1);
-            if (rightInputValue - leftInputValue >= gap && rightInputValue <= rightMaxValue) {
-                if (e.target.className === 'input-min') {
-                    (0, jquery_1.default)(rangeInputs[0]).val(leftInputValue);
-                    progress.css('left', (leftInputValue / leftMaxValue * 100) + '%');
-                }
-                else if (e.target.className === 'input-max') {
-                    (0, jquery_1.default)(rangeInputs[1]).val(rightInputValue);
-                    progress.css('right', (100 - (rightInputValue / rightMaxValue * 100)) + '%');
-                }
-            }
-        });
-    });
+    // priceInputs.each(function() {
+    //     this.addEventListener("input", (e) => {
+    //         let leftInputValue = +($(priceInputs[0]).val() ?? 0)
+    //         let rightInputValue = +($(priceInputs[1]).val() ?? 0)
+    //
+    //         let leftMaxValue = +($(rangeInputs[0]).attr('max') ?? 1)
+    //         let rightMaxValue = +($(rangeInputs[1]).attr('max') ?? 1)
+    //
+    //         if (rightInputValue - leftInputValue >= gap && rightInputValue <= rightMaxValue){
+    //             if ((e.target as HTMLElement).className === 'input-min') {
+    //                 $(rangeInputs[0]).val(leftInputValue)
+    //                 progress.css('left', (leftInputValue / leftMaxValue * 100) + '%')
+    //             } else if ((e.target as HTMLElement).className === 'input-max'){
+    //                 $(rangeInputs[1]).val(rightInputValue)
+    //                 progress.css('right', (100 - (rightInputValue / rightMaxValue * 100)) + '%')
+    //             }
+    //         }
+    //     })
+    // })
     rangeInputs.each(function () {
         this.addEventListener("input", (e) => {
             var _a, _b, _c, _d;
@@ -67,14 +95,129 @@ __webpack_require__(/*! ./style.scss */ "./style.scss");
                 }
             }
             else {
-                (0, jquery_1.default)(priceInputs[0]).val(leftValue);
-                (0, jquery_1.default)(priceInputs[1]).val(rightValue);
+                // $(priceInputs[0]).val(leftValue)
+                // $(priceInputs[1]).val(rightValue)
                 progress.css('left', (leftValue / leftMaxValue * 100) + '%');
                 progress.css('right', (100 - (rightValue / rightMaxValue * 100)) + '%');
             }
         });
     });
 });
+(function ($) {
+    $.fn.myPlugin = function (props) {
+        const rangeView = new view_1.RangeSliderView(this, props);
+        rangeView.mount();
+    };
+})(jquery_2.default);
+(0, jquery_1.default)('#root').myPlugin({
+    max: 1000,
+    min: 100,
+    color: 'teal',
+});
+
+
+/***/ }),
+
+/***/ "./model.ts":
+/*!******************!*\
+  !*** ./model.ts ***!
+  \******************/
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RangeSliderModel = void 0;
+class RangeSliderModel {
+    constructor() {
+        this.defaultOptions = {
+            min: 0,
+            max: 100,
+            type: 'range',
+            color: 'gray',
+            position: 'horizontally', // 'horizontally' or 'vertically'
+            //this.value = (this.min + this.max)/2
+        };
+        this.options = Object.assign({}, this.defaultOptions);
+        if (false)
+            {}
+        if (false)
+            {}
+    }
+    setValue(name) {
+        var _a;
+        if (this.options.min !== undefined && this.options.max !== undefined) {
+            switch (name) {
+                case 'leftPointerValue': {
+                    this.options.leftPointerValue = (((_a = this.options) === null || _a === void 0 ? void 0 : _a.min) + this.options.max) / 4;
+                }
+                case 'rightPointerValue': {
+                    this.options.rightPointerValue = this.options.max - (this.options.min + this.options.max) / 4;
+                }
+                // case 'value': {
+                //     this.options.value = (this.options.min + this.options.max)/2
+                // }
+            }
+        }
+    }
+    getOptions() {
+        return this.options;
+    }
+    setOptions(props) {
+        this.options = Object.assign(Object.assign({}, this.defaultOptions), props);
+        console.log(this.options);
+    }
+}
+exports.RangeSliderModel = RangeSliderModel;
+
+
+/***/ }),
+
+/***/ "./view.ts":
+/*!*****************!*\
+  !*** ./view.ts ***!
+  \*****************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RangeSliderView = void 0;
+const jquery_1 = __importDefault(__webpack_require__(/*! jquery */ "../node_modules/jquery/dist/jquery.js"));
+const controller_1 = __webpack_require__(/*! ./controller */ "./controller.ts");
+class RangeSliderView {
+    constructor(root, props) {
+        this.root = root;
+        this.controller = new controller_1.RangeSliderController();
+        this.setOptions(props);
+        this.leftRangePointer = (0, jquery_1.default)('<input type="range" class="range-min">').attr({
+            min: props.min,
+            max: props.max,
+        });
+        this.rightRangePointer = (0, jquery_1.default)('<input type="range" class="range-max">').attr({
+            min: props.min,
+            max: props.max,
+        });
+    }
+    setOptions(props) {
+        this.controller.handleSetOptions(props);
+    }
+    getOptions() {
+        //const options = this.controller.handleGetOptions()
+        //console.log(options)
+        return this.controller.handleGetOptions(); // actual options from model
+    }
+    mount() {
+        (0, jquery_1.default)(this.root).append('<div class="slider"><div class="progress"></div></div>');
+        (0, jquery_1.default)(this.root).append('<div class="range-input"></div>');
+        (0, jquery_1.default)(this.root).children('.range-input')
+            .append(this.leftRangePointer)
+            .append(this.rightRangePointer);
+        this.getOptions();
+    }
+}
+exports.RangeSliderView = RangeSliderView;
 
 
 /***/ })
