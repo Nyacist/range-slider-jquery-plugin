@@ -12,22 +12,10 @@ export class RangeSliderView implements View {
     controller: RangeSliderController;
     root: JQuery<HTMLElement>;
 
-    private leftRangePointer: JQuery<HTMLElement>;
-    private rightRangePointer: JQuery<HTMLElement>;
-
     constructor(root: JQuery<HTMLElement>, props: IOptions) {
         this.root = root
         this.controller = new RangeSliderController()
         this.setOptions(props)
-
-        this.leftRangePointer = $('<input type="range" class="range-min">').attr({
-            min: props.min,
-            max: props.max,
-        })
-        this.rightRangePointer = $('<input type="range" class="range-max">').attr({
-            min: props.min,
-            max: props.max,
-        })
     }
 
     private setOptions(props: IOptions) {
@@ -35,19 +23,38 @@ export class RangeSliderView implements View {
     }
 
     private getOptions() {
-        //const options = this.controller.handleGetOptions()
-        //console.log(options)
         return this.controller.handleGetOptions()   // actual options from model
     }
 
+    createRangeInputs() {
+        const options = this.getOptions()
+        if (options.type == 'range') {
+            const leftRangePointer = $('<input type="range" class="range-min">').attr({
+                min: options.min,
+                max: options.max,
+                value: options.leftPointerValue,
+            })
+            const rightRangePointer = $('<input type="range" class="range-max">').attr({
+                min: options.min,
+                max: options.max,
+                value: options.rightPointerValue,
+            })
+            return $('<div class="range-input"></div>').append(leftRangePointer).append(rightRangePointer)
+        }
+    }
+
     public mount() {
+
         $(this.root).append('<div class="slider"><div class="progress"></div></div>')
         $(this.root).append('<div class="range-input"></div>')
-        $(this.root).children('.range-input')
-            .append(this.leftRangePointer)
-            .append(this.rightRangePointer)
 
-        this.getOptions()
+        const a = this.createRangeInputs()
+        $(this.root).append()
+        console.log(a)
+            // .append(this.leftRangePointer)
+            // .append(this.rightRangePointer)
+
+
     }
 
 }

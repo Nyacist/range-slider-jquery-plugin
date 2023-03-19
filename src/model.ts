@@ -53,7 +53,7 @@ export class RangeSliderModel implements IModel{
 
     setOptions(props: IOptions) {
         this.options = {...this.defaultOptions, ...props}
-        console.log(this.options)
+        //console.log(this.options)
     }
 
 }
