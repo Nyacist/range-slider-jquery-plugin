@@ -63,21 +63,21 @@ body {
   }
 }
 
-.slider {
-  height: 5px;
-  border-radius: 5px;
-  background: #ddd;
-  position: relative;
-
-  .progress {
-    height: 5px;
-    position: absolute;
-    left: 25%;
-    right: 25%;
-    border-radius: 5px;
-    background: gray;
-  }
-}
+//.slider {
+//  height: 5px;
+//  border-radius: 5px;
+//  background: #ddd;
+//  position: relative;
+//
+//  .progress {
+//    height: 5px;
+//    position: absolute;
+//    left: 25%;
+//    right: 25%;
+//    border-radius: 5px;
+//    background: gray;
+//  }
+//}
 
 .range-input {
   position: relative;
@@ -113,23 +113,42 @@ body {
 }
 
 
-
-.slider_bg {
+.slider {
   border-radius: 5px;
   background: #E0E0E0;
   background: linear-gradient(left top, #E0E0E0, #EEEEEE);
   width: 310px;
-  height: 15px;
-  margin: 5px;
+  height: 10px;
+  margin: 10px;
+  position: relative;
+
+    .progress {
+      height: 100%;
+      position: absolute;
+      //min-width: 100px;
+      left: 0%;
+      right: 25%;
+      border-radius: 5px;
+      background: gray;
+
+    }
+
+    .thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      position: absolute;
+      top: -20px;
+      background: blue;
+      cursor: pointer;
+
+      &_left {
+        left: -10px;
+      }
+
+      &_right {
+        right: -10px;
+      }
+    }
 }
 
-.thumb {
-  width: 10px;
-  height: 25px;
-  border-radius: 3px;
-  position: relative;
-  left: 10px;
-  top: -5px;
-  background: blue;
-  cursor: pointer;
-}

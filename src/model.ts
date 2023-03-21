@@ -1,9 +1,11 @@
+type Orientation = 'horizontally' | 'vertically';
+
 export interface IOptions {
     min?: number;
     max?: number;
     type?: string;   // range - for two pointers (default), one - for one pointers
     color?: string;
-    position?: string;  // 'horizontally' or 'vertically'
+    position?: Orientation;  // 'horizontally' or 'vertically'
     step?: number;
     leftPointerValue?: number;
     rightPointerValue?: number;
@@ -19,9 +21,9 @@ export class RangeSliderModel implements IModel{
     defaultOptions: IOptions = {
         min: 0,
         max: 100,
-        type: 'range', // range - for two pointers (default), one - for one pointers
+        type: 'one', // range - for two pointers (default), one - for one pointers
         color: 'gray',
-        position: 'horizontally', // 'horizontally' or 'vertically'
+        position: 'vertically', // 'horizontally' or 'vertically'
         //this.value = (this.min + this.max)/2
     }
 

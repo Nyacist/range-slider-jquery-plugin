@@ -74,50 +74,56 @@ declare global {
 $('#root').myPlugin({
     max: 1000,
     min: 100,
-    color: 'teal',
+    type: 'range',
 })
 
-const slider = document.querySelector<HTMLElement>('#slider');
-const thumb = document.querySelector<HTMLElement>('.thumb');
+$('#root2').myPlugin({
+    max: 1000,
+    min: 100,
+    type: 'one',
+})
 
-if (thumb && slider) {
-    thumb.onmousedown = function(event) {
-        event.preventDefault(); // предотвратить запуск выделения (действие браузера)
-
-        let shiftX = event.clientX - thumb.getBoundingClientRect().left;
-        // shiftY здесь не нужен, слайдер двигается только по горизонтали
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-        console.log(event)
-
-        function onMouseMove(event: any) {
-            if (thumb && slider) {
-                let newLeft = event.clientX - shiftX - slider.getBoundingClientRect().left;
-
-                // курсор вышел из слайдера => оставить бегунок в его границах.
-                if (newLeft < 0) {
-                    newLeft = 0;
-                }
-                let rightEdge = slider.offsetWidth - thumb.offsetWidth;
-                if (newLeft > rightEdge) {
-                    newLeft = rightEdge;
-                }
-
-                thumb.style.left = newLeft + 'px';
-            }
-        }
-
-        function onMouseUp() {
-            document.removeEventListener('mouseup', onMouseUp);
-            document.removeEventListener('mousemove', onMouseMove);
-        }
-
-    };
-
-    thumb.addEventListener('dragstart', function() {
-        return false;
-    });
-}
+// const slider = document.querySelector<HTMLElement>('#slider');
+// const thumb = document.querySelector<HTMLElement>('.thumb');
+//
+// if (thumb && slider) {
+//     thumb.onmousedown = function(event) {
+//         event.preventDefault(); // предотвратить запуск выделения (действие браузера)
+//
+//         let shiftX = event.clientX - thumb.getBoundingClientRect().left;
+//         // shiftY здесь не нужен, слайдер двигается только по горизонтали
+//
+//         document.addEventListener('mousemove', onMouseMove);
+//         document.addEventListener('mouseup', onMouseUp);
+//         //console.log(event)
+//
+//         function onMouseMove(event: any) {
+//             if (thumb && slider) {
+//                 let newLeft = event.clientX - shiftX - slider.getBoundingClientRect().left;
+//
+//                 // курсор вышел из слайдера => оставить бегунок в его границах.
+//                 if (newLeft < 0) {
+//                     newLeft = 0;
+//                 }
+//                 let rightEdge = slider.offsetWidth - thumb.offsetWidth;
+//                 if (newLeft > rightEdge) {
+//                     newLeft = rightEdge;
+//                 }
+//
+//                 thumb.style.left = newLeft + 'px';
+//             }
+//         }
+//
+//         function onMouseUp() {
+//             document.removeEventListener('mouseup', onMouseUp);
+//             document.removeEventListener('mousemove', onMouseMove);
+//         }
+//
+//     };
+//
+//     thumb.addEventListener('dragstart', function() {
+//         return false;
+//     });
+// }
 
 
