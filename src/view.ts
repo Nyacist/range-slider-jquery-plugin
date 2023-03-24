@@ -3,8 +3,60 @@ import {IController, RangeSliderController} from './controller'
 import {IOptions} from './model'
 import MouseMoveEvent = JQuery.MouseMoveEvent;
 import MouseDownEvent = JQuery.MouseDownEvent;
-import * as Console from "console";
 
+interface IThumbOptions {
+    positionClass: 'left' | 'right',
+    root: JQuery<HTMLElement>
+}
+
+class Thumb {
+    thumb: JQuery<HTMLElement>
+    constructor(props: IThumbOptions) {
+        this.thumb = $(`<div class='thumb thumb_${props.positionClass}'></div>`)
+
+        $(this.thumb).on('mousedown', {root: props.root, position: props.positionClass} , this.onMouseDown)
+        $(this.thumb).on('dragstart', () => false)
+
+    }
+
+    public onMouseDown = function (e: MouseDownEvent) {
+        e.preventDefault()
+        const root = e.data.root
+        const position = e.data.position
+
+        const onMouseMove = (e: MouseMoveEvent) => {
+
+            let thumbPosition = e.clientX - ($('.slider', root).offset()?.left || 0)
+            const sliderWidth = $('.slider', root).width() || 1
+
+            // курсор вышел из слайдера => оставить бегунок в его границах.
+            if (thumbPosition < 0) {
+                thumbPosition = 0
+            }
+            if (thumbPosition > sliderWidth) {
+                thumbPosition = sliderWidth
+            }
+            const thumbPercentageValue = (thumbPosition / sliderWidth) * 100
+
+            if (position == 'left') {
+                $('.progress', root).css('left', thumbPercentageValue + '%')
+            }
+            if (position == 'right') {
+                $('.progress', root).css('right', 100 - thumbPercentageValue + '%')
+            }
+        }
+
+        const onMouseUp = () => {
+            $(document).off('mousemove', onMouseMove)
+            $(document).off('mouseup', onMouseUp)
+        }
+
+        $(document).on('mousemove', onMouseMove)
+        $(document).on('mouseup', onMouseUp)
+
+    }
+
+}
 
 export interface View {
     mount: () => void;
@@ -17,7 +69,7 @@ export class RangeSliderView implements View {
 
     private slider: JQuery<HTMLElement>
     private progressBar: JQuery<HTMLElement>
-    private thumb: [JQuery<HTMLElement>] | [JQuery<HTMLElement>, JQuery<HTMLElement>]
+    private thumbs: [Thumb] | [Thumb, Thumb]
 
     type: 'one' | 'range'
 
@@ -34,13 +86,18 @@ export class RangeSliderView implements View {
 
         this.slider = $('<div class="slider"></div>')
         this.progressBar = $('<div class="progress"></div>')
-        this.thumb = [$('<div class="thumb thumb_right"></div>')]
+
+        this.thumbs = [new Thumb({
+            positionClass: "right",
+            root: this.root
+        })]
 
         if (this.type === 'range') {
-            this.thumb.unshift($('<div class="thumb thumb_left"></div>'))
+            this.thumbs.unshift(new Thumb({
+                positionClass: "left",
+                root: this.root
+            }))
         }
-
-        this.bindListener()
 
         this.setOptions(props)
     }
@@ -53,115 +110,11 @@ export class RangeSliderView implements View {
         return this.controller.handleGetOptions()   // actual options from model
     }
 
-
-    // private onMouseDown() {
-    //     const slider = $('.slider', this.root)
-    //     const progressBar = $('.progress', this.root)
-
-    // const thumb = $('.thumb_left', this.root)
-    //
-    // thumb.on('mousedown', function (e) {
-    //     e.preventDefault()
-    //     let shiftX: number
-    //     shiftX = e.clientX - ($(this).offset()?.left || 0)
-    //     //console.log('shift = ' + shiftX)
-    //
-    //     $(document).on('mousemove', onMouseMove)
-    //     $(document).on('mouseup', onMouseUp)
-    //
-    //
-    //     function onMouseMove(e: MouseMoveEvent) {
-    //         console.log(e.target)
-    //         if (slider) {
-    //             let thumbPosition = e.clientX - shiftX - (slider.offset()?.left || 0)
-    //             let sliderWidth = slider.width() || 1
-    //
-    //             // курсор вышел из слайдера => оставить бегунок в его границах.
-    //             if (thumbPosition < 0) {
-    //                 thumbPosition = 0
-    //             } else if (thumbPosition > sliderWidth) {
-    //                 thumbPosition = sliderWidth;
-    //             }
-    //             let thumbPercentageValue = (thumbPosition / sliderWidth) * 100
-    //             //console.log('% = ' + thumbPercentageValue)
-    //
-    //             if ($(e.target).hasClass('thumb_left')) {
-    //                 e.preventDefault()
-    //                 progressBar.css('left', thumbPercentageValue + '%')
-    //             }
-    //             if ($(e.target).hasClass('thumb_right')) {
-    //                 e.preventDefault()
-    //                 progressBar.css('right', 100 - thumbPercentageValue + '%')
-    //             }
-    //         }
-    //     }
-    //
-    //     function onMouseUp() {
-    //         $(document).off('mouseup', onMouseUp);
-    //         $(document).off('mousemove', onMouseMove);
-    //     }
-    // })
-    // thumb.on('dragstart', function () {
-    //     return false;
-    // });
-    //}
-
-    public bindListener() {
-        //if (Array.isArray(this.thumb)) {
-        $(this.thumb).each((index, element) => {
-            $(element).on('mousedown', this.onMouseDown)
-            console.log($(element))
-            $(element).on('dragstart', () => false)
-        })
-        //}
-
-        // $(this.thumb[0]).on('mousedown', this.onMouseDown)
-        // $(this.thumb[0]).on('dragstart', () => false) //event.stopPropagation()
-        //console.log($(this.thumb[0]))
-
-    }
-
-    private onMouseDown = (e: MouseDownEvent) => {
-        e.preventDefault()
-        $(document).on('mousemove', this.onMouseMove)
-        $(document).on('mouseup', this.onMouseUp)
-    }
-
-    private onMouseMove = (e: MouseMoveEvent) => {
-
-
-        let thumbPosition = e.clientX - (this.slider.offset()?.left || 0)
-        const sliderWidth = this.slider.width() || 1
-
-        // курсор вышел из слайдера => оставить бегунок в его границах.
-        if (thumbPosition < 0) {
-            thumbPosition = 0
-        }
-        if (thumbPosition > sliderWidth) {
-            thumbPosition = sliderWidth
-        }
-        const thumbPercentageValue = (thumbPosition / sliderWidth) * 100
-        //console.log('% = ' + thumbPercentageValue)
-
-        //console.log(e.target.classList.contains('thumb_left'))
-        if (e.target.classList.contains('thumb_left')) {
-            this.progressBar.css('left', Math.round(thumbPercentageValue) + '%')
-        }
-        if ($(e.target).hasClass('thumb_right')) {
-            this.progressBar.css('right', 100 - thumbPercentageValue + '%')
-        }
-        //this.progressBar.css('right', 100 - thumbPercentageValue + '%')
-        //this.progressBar.css('left', thumbPercentageValue + '%')
-
-    }
-
-    private onMouseUp = () => {
-        $(document).off('mousemove', this.onMouseMove)
-        $(document).off('mouseup', this.onMouseUp)
-    }
-
     public mount() {
-        const progress = this.progressBar.append(this.thumb)
+        let progress = this.progressBar
+        this.thumbs.forEach((element) => {
+            progress.append(element.thumb)
+        })
         const slider = this.slider.append(progress)
         $(this.root).append(slider)
     }

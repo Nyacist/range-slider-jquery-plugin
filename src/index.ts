@@ -3,14 +3,13 @@ import jQuery from 'jquery';
 import './style.scss';
 import {RangeSliderView} from './view';
 import {IOptions} from './model'
-import MouseDownEvent = JQuery.MouseDownEvent;
 
-$(function () {
+//$(function () {
     // let rangeInputs = $('.range-input input')
     // let priceInputs = $('.price-input input')
     // const progress = $('.slider .progress')
     // const gap = 1000
-
+//
     // priceInputs.each(function() {
     //     this.addEventListener("input", (e) => {
     //         let leftInputValue = +($(priceInputs[0]).val() ?? 0)
@@ -30,7 +29,7 @@ $(function () {
     //         }
     //     })
     // })
-
+//
     // rangeInputs.each(function() {
     //     this.addEventListener("input", (e) => {
     //         let leftValue = +($(rangeInputs[0]).val() ?? 0)
@@ -53,8 +52,7 @@ $(function () {
     //         }
     //     })
     // })
-
-});
+//});
 
 declare global {
     interface JQuery {
