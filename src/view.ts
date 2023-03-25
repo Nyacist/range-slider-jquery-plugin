@@ -3,6 +3,7 @@ import {IController, RangeSliderController} from './controller'
 import {IOptions} from './model'
 import MouseMoveEvent = JQuery.MouseMoveEvent;
 import MouseDownEvent = JQuery.MouseDownEvent;
+import {makeLogger} from "ts-loader/dist/logger";
 
 interface IThumbOptions {
     positionClass: 'left' | 'right',
@@ -36,7 +37,7 @@ class Thumb {
             if (thumbPosition > sliderWidth) {
                 thumbPosition = sliderWidth
             }
-            const thumbPercentageValue = (thumbPosition / sliderWidth) * 100
+            const thumbPercentageValue = Math.round(thumbPosition / sliderWidth * 100)
 
             if (position == 'left') {
                 $('.progress', root).css('left', thumbPercentageValue + '%')
@@ -100,6 +101,7 @@ export class RangeSliderView implements View {
         }
 
         this.setOptions(props)
+        this.onClickProgress()
     }
 
     private setOptions(props: IOptions) {
@@ -108,6 +110,40 @@ export class RangeSliderView implements View {
 
     private getOptions() {
         return this.controller.handleGetOptions()   // actual options from model
+    }
+
+    onClickProgress() {
+        this.slider.on('click', (e) => {
+            const progressBar = $('.progress', this.root)
+            const thumbsPosition = []
+            thumbsPosition.push(
+                +progressBar.css('right').replace(/[^0-9,.]/g, '')
+            )
+            if (this.type === 'range') {
+                thumbsPosition.push(
+                    +progressBar.css('left').replace(/[^0-9,.]/g, '')
+                )
+            }
+
+            const clickPosition = e.clientX - ($('.slider', this.root).offset()?.left || 0)
+            const sliderWidth = $('.slider', this.root).width() || 1
+
+            const clickValue = Math.round(clickPosition / sliderWidth * 100)
+
+            const progressBarOffset = thumbsPosition.map((element) => {
+                return Math.round(element / sliderWidth * 100)
+            })
+
+            const distanceRight = Math.abs(100 - progressBarOffset[0] - clickValue)
+            const distanceLeft = Math.abs(progressBarOffset[1] - clickValue)
+
+            if (distanceLeft < distanceRight) {
+                progressBar.css('left', clickValue + '%')
+            }
+            else {
+                progressBar.css('right', 100 - clickValue + '%')
+            }
+        })
     }
 
     public mount() {

@@ -40,6 +40,9 @@ body {
       border-radius: 5px;
       background: gray;
 
+      &:hover{
+        cursor: pointer;
+      }
     }
 
     .thumb {
